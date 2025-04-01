@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="/css/registration.css">
+</head>
+<body>
+<div class="registration-container">
+    <div class="registration-card">
+        <h2 class="registration-title">Создать аккаунт</h2>
+        <form method="post" action="/registration" id="registrationForm" class="registration-form" th:object="${user}" >
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+            <input type="hidden" id="phone" name="phone">
+            <div class="form-group">
+                <div class="input-container">
+                    <input type="text" th:field="*{lastName}" id="lastName" name="lastName" placeholder="Фамилия" required>
+                </div>
+                <div id="lastNameError" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <input type="text" th:field="*{firstName}" id="firstName" name="firstName" placeholder="Имя" required>
+                </div>
+                <div id="firstNameError" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <input type="text" th:field="*{middleName}" id="middleName" name="middleName" placeholder="Отчество">
+                </div>
+                <div id="middleNameError" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container phone-input-container">
+                    <span class="phone-prefix">+7</span>
+                    <input type="tel" id="phoneForm" name="phoneForm" placeholder="XXX XXX-XX-XX" required>
+                </div>
+                <div id="phoneError" class="error-message"></div>
+                <span th:text="${usernameError}" class="error-message"></span>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <input type="password" id="password" name="password" placeholder="Пароль" required>
+                </div>
+                <div id="passwordError" class="error-message"></div>
+            </div>
+
+            <button type="submit" class="submit-btn">Продолжить</button>
+        </form>
+        <button type="button" class="login-btn" onclick="window.location.href='/login'">Уже есть аккаунт? Войти</button>
+        <div id="successMessage" class="success-message"></div>
+    </div>
+</div>
+
+<script src="/js/registration.js"></script>
+</body>
+</html>

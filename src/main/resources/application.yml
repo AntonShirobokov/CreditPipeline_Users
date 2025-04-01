@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/CreditPipeline_Users
+    username: postgres
+    password: postgres
+  sql:
+    init:
+      mode: never
+jwt:
+  cookie-token-key: '{"kty":"oct","k":"956PBFst1FguLr5irJD-aQ"}'
+
+server:
+  http2:
+    enabled: true
+  port: 8443
+  ssl:
+    key-store: C:\Users\Anton\my_ssl_store\keystore\localhost.p12
+    key-store-password: password
+    key-alias: localhost

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в аккаунт</title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+<div class="login-container">
+    <div class="login-card">
+        <h2 class="login-title">Войти в аккаунт</h2>
+        <form method="post" action="/login" id="loginForm" class="login-form">
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+
+            <!-- Скрытое поле для username (будет заполнено JS) -->
+            <input type="hidden" id="username" name="username" />
+
+            <div class="form-group">
+                <div class="input-container phone-input-container">
+                    <span class="phone-prefix">+7</span>
+                    <input type="tel" id="phone" name="phone" placeholder="XXX XXX-XX-XX" required>
+                </div>
+                <div id="phoneError" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <input type="password" id="password" name="password" placeholder="Пароль" required>
+                </div>
+                <div id="passwordError" class="error-message"></div>
+            </div>
+
+            <button type="submit" class="submit-btn">Войти</button>
+
+            <div class="register-link">
+                Ещё нет аккаунта? <a href="/registration">Зарегистрироваться</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/js/login.js"></script>
+</body>
+</html>
