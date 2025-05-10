@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrimeBank - Финансовая свобода</title>
+    <link rel="stylesheet" href="/css/profile.css">
+
+</head>
+<body>
+<div class="main-container">
+    <header class="main-header">
+        <div class="logo">Prime<span>Bank</span></div>
+        <nav class="main-nav">
+            <a href="/profile" class="nav-link">Профиль</a>
+        </nav>
+    </header>
+
+    <main class="hero-section">
+        <h1>Профиль пользователя</h1>
+
+        <div class="section">
+            <h2>ФИО и контактные данные</h2>
+            <div class="row"><span class="label">Фамилия:</span> <span class="field" data-field="lastName" th:text="${user.lastName}"></span></div>
+            <div class="row"><span class="label">Имя:</span> <span class="field" data-field="firstName" th:text="${user.firstName}"></span></div>
+            <div class="row"><span class="label">Отчество:</span> <span class="field" data-field="middleName" th:text="${user.middleName}"></span></div>
+            <div class="row"><span class="label">Телефон:</span> <span class="field" data-field="phone" th:text="${user.phone}"></span></div>
+            <div class="row"><span class="label">Почта:</span> <span class="field" data-field="email" th:text="${user.email != null and !user.email.isEmpty()} ? ${user.email} : '-'"></span></div>
+            <button id="edit-btn">Редактировать</button>
+            <button id="save-btn" style="display:none;">Сохранить</button>
+        </div>
+
+
+
+        <div class="section">
+            <h2>Паспортные данные</h2>
+            <div class="row"><span class="label">Серия:</span> <span class="field" data-field="series" th:text="${passport?.series != null} ? ${passport.series} : '-'"></span></div>
+            <div class="row"><span class="label">Номер:</span> <span class="field" data-field="number" th:text="${passport?.number != null} ? ${passport.number} : '-'"></span></div>
+            <div class="row"><span class="label">Дата рождения:</span> <span class="field" data-field="birthDate" th:text="${passport?.birthDate != null} ? ${#temporals.format(passport.birthDate, 'dd.MM.yyyy')} : '-'"></span></div>
+            <div class="row"><span class="label">Место рождения:</span> <span class="field" data-field="birthPlace" th:text="${passport?.birthPlace != null} ? ${passport.birthPlace} : '-'"></span></div>
+            <div class="row"><span class="label">Код подразделения:</span> <span class="field" data-field="departmentCode" th:text="${passport?.departmentCode != null} ? ${passport.departmentCode} : '-'"></span></div>
+            <div class="row"><span class="label">Кем выдан:</span> <span class="field" data-field="issuedBy" th:text="${passport?.issuedBy != null} ? ${passport.issuedBy} : '-'"></span></div>
+            <div class="row"><span class="label">Дата выдачи:</span> <span class="field" data-field="issueDate" th:text="${passport?.issueDate != null} ? ${#temporals.format(passport.issueDate, 'dd.MM.yyyy')} : '-'"></span></div>
+            <div class="row"><span class="label">ИНН:</span> <span class="field" data-field="inn" th:text="${passport?.inn != null} ? ${passport.inn} : '-'"></span></div>
+            <div class="row"><span class="label">СНИЛС:</span> <span class="field" data-field="snils" th:text="${passport?.snils != null} ? ${passport.snils} : '-'"></span></div>
+            <button class="edit-btn" data-section="passport">Редактировать</button>
+            <button class="save-btn" data-section="passport" style="display:none;">Сохранить</button>
+        </div>
+
+        <div class="section">
+            <h2>Адрес</h2>
+            <div class="row"><span class="label">Адрес регистрации:</span> <span class="field" data-field="registrationAddress" th:text="${passport?.registrationAddress != null} ? ${passport.registrationAddress} : '-'"></span></div>
+            <button class="edit-btn" data-section="address">Редактировать</button>
+            <button class="save-btn" data-section="address" style="display:none;">Сохранить</button>
+        </div>
+    </main>
+    <script src="/js/profile.js"></script>
+
+</div>
+</body>
+</html>

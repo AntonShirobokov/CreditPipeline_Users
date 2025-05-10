@@ -59,6 +59,7 @@ public class SecurityConfig {
         http.with(tokenCookieAuthenticationConfigurer, Customizer.withDefaults())
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .defaultSuccessUrl("/credit")
                         .permitAll())
                 .addFilterAfter(new GetCsrfTokenFilter(), ExceptionTranslationFilter.class)
                 .authorizeHttpRequests(authorizeHttpRequests ->
