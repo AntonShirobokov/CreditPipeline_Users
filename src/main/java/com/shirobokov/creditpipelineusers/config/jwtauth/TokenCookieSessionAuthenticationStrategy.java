@@ -17,7 +17,7 @@ import java.util.function.Function;
 
 public class TokenCookieSessionAuthenticationStrategy implements SessionAuthenticationStrategy {
 
-    private Function<Authentication, Token> tokenCookieFactory = new DefaultTokenCookieFactory();
+    private Function<Authentication, Token> tokenCookieFactory;
 
     private Function<Token, String> tokenStringSerializer = Objects::toString;
 

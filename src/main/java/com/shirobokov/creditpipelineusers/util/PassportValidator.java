@@ -1,12 +1,14 @@
 package com.shirobokov.creditpipelineusers.util;
 
 import com.shirobokov.creditpipelineusers.entity.Passport;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+@Component
 public class PassportValidator implements Validator {
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");

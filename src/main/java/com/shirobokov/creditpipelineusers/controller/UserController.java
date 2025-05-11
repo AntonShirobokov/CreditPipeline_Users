@@ -25,7 +25,9 @@ public class UserController {
     public String profile(Model model) {
         TokenUser tokenUser = (TokenUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        User user = userService.findByPhone(tokenUser.getUsername());
+
+
+        User user = userService.findById(Integer.parseInt(tokenUser.getToken().subject()));
 
         Passport passport = user.getPassport();
 

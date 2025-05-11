@@ -1,6 +1,7 @@
 package com.shirobokov.creditpipelineusers.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class Passport {
     @Column(name="c_number")
     private String number;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     @Column(name="c_birth_date")
     private LocalDate birthDate;
 
@@ -39,6 +41,7 @@ public class Passport {
     @Column(name="c_issued_by")
     private String issuedBy;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     @Column(name="c_issue_date")
     private LocalDate issueDate;
 

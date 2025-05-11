@@ -3,8 +3,11 @@ package com.shirobokov.creditpipelineusers.restcontroller;
 
 import com.shirobokov.creditpipelineusers.config.jwtauth.token.Token;
 import com.shirobokov.creditpipelineusers.config.jwtauth.token.TokenUser;
+import com.shirobokov.creditpipelineusers.entity.Passport;
 import com.shirobokov.creditpipelineusers.entity.User;
+import com.shirobokov.creditpipelineusers.service.PassportService;
 import com.shirobokov.creditpipelineusers.service.UserService;
+import com.shirobokov.creditpipelineusers.util.PassportValidator;
 import com.shirobokov.creditpipelineusers.util.UserValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,11 +32,17 @@ public class UpdateController {
 
     private final UserService userService;
 
+    private final PassportService passportService;
+
     private final UserValidator userValidator;
 
-    public UpdateController(UserService userService, UserValidator userValidator) {
+    private final PassportValidator passportValidator;
+
+    public UpdateController(UserService userService, PassportService passportService, UserValidator userValidator, PassportValidator passportValidator) {
         this.userService = userService;
+        this.passportService = passportService;
         this.userValidator = userValidator;
+        this.passportValidator = passportValidator;
     }
 
 
@@ -43,7 +52,7 @@ public class UpdateController {
 
         TokenUser tokenUser = (TokenUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        User currentUser = userService.findByPhone(tokenUser.getUsername()); // авторизованный пользователь
+        User currentUser = userService.findById(Integer.parseInt(tokenUser.getToken().subject())); // авторизованный пользователь
 
         if (!currentUser.getPhone().equals(updatedUser.getPhone())  && userService.findByPhone(updatedUser.getPhone()) != null) {
             bindingResult.rejectValue("phone", "error.phoneAlreadyExists", "Такой номер телефона уже зарегестрирован");
@@ -59,45 +68,38 @@ public class UpdateController {
 
 
         userService.updateUser(currentUser, updatedUser);
-        //updateSecurityContext(tokenUser, updatedUser);
-        return ResponseEntity.ok(currentUser);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @PostMapping("/api/user/update-passport")
+    @ResponseBody
+    public ResponseEntity<?> updatePassport(@RequestBody @Validated Passport updatedPassport, BindingResult bindingResult) {
+        System.out.println("Новые данные паспотра" + updatedPassport);
+
+        TokenUser tokenUser = (TokenUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        User currentUser = userService.findById(Integer.parseInt(tokenUser.getToken().subject()));
+
+        Passport oldPassport = currentUser.getPassport();
+
+        System.out.println("Старый паспорт" + updatedPassport);
+
+        passportValidator.validate(updatedPassport, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors= new HashMap<>();
+
+            bindingResult.getFieldErrors().forEach(err ->
+                    errors.put(err.getField(), err.getDefaultMessage()));
+
+            return ResponseEntity.badRequest().body(Map.of("errors", errors));
+        }
+
+        passportService.updatePassport(oldPassport, updatedPassport);
+
+        return ResponseEntity.ok(updatedPassport);
     }
 
 
-
-//    private void updateSecurityContext(TokenUser oldTokenUser, User updatedUser) {
-//        Token oldToken = oldTokenUser.getToken();
-//
-//        // Создаём новый Token с обновлённым subject (телефоном)
-//        Token newToken = new Token(
-//                oldToken.id(),                    // тот же UUID
-//                updatedUser.getPhone(),           // обновлённый subject
-//                oldToken.authorities(),           // те же права
-//                oldToken.createdAt(),             // прежнее время создания
-//                oldToken.expiresAt()              // прежнее время истечения
-//        );
-//
-//        // Создаём нового TokenUser с новым токеном и обновлённым subject
-//        TokenUser newTokenUser = new TokenUser(
-//                newToken.subject(),               // новый username (телефон)
-//                "nopassword",                     // пароль не используется
-//                oldTokenUser.isEnabled(),
-//                oldTokenUser.isAccountNonExpired(),
-//                oldTokenUser.isCredentialsNonExpired(),
-//                oldTokenUser.isAccountNonLocked(),
-//                oldTokenUser.getAuthorities(),
-//                newToken
-//        );
-//
-//        // Создаём новое Authentication
-//        Authentication newAuth = new UsernamePasswordAuthenticationToken(
-//                newTokenUser,
-//                null,
-//                newTokenUser.getAuthorities()
-//        );
-//
-//        // Обновляем SecurityContext
-//        SecurityContextHolder.getContext().setAuthentication(newAuth);
-//    }
 
 }

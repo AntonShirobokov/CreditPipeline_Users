@@ -7,8 +7,10 @@ import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.shirobokov.creditpipelineusers.config.jwtauth.GetCsrfTokenFilter;
 import com.shirobokov.creditpipelineusers.config.jwtauth.TokenCookieAuthenticationConfigurer;
 import com.shirobokov.creditpipelineusers.config.jwtauth.TokenCookieSessionAuthenticationStrategy;
+import com.shirobokov.creditpipelineusers.config.jwtauth.token.DefaultTokenCookieFactory;
 import com.shirobokov.creditpipelineusers.config.jwtauth.token.TokenCookieJweStringDeserializer;
 import com.shirobokov.creditpipelineusers.config.jwtauth.token.TokenCookieJweStringSerializer;
+import com.shirobokov.creditpipelineusers.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +29,8 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 @Configuration
 @EnableWebSecurity(debug=true)
 public class SecurityConfig {
+
+
 
     @Bean
     public TokenCookieJweStringSerializer tokenCookieJweStringSerializer(@Value("${jwt.cookie-token-key}") String cookieTokenKey) throws Exception {
@@ -49,12 +53,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             TokenCookieAuthenticationConfigurer tokenCookieAuthenticationConfigurer,
-            TokenCookieJweStringSerializer tokenCookieJweStringSerializer) throws Exception {
+            TokenCookieJweStringSerializer tokenCookieJweStringSerializer,
+            UserService userService) throws Exception {
 
 
         var tokenCookieSessionAuthenticationStrategy = new TokenCookieSessionAuthenticationStrategy();
-        tokenCookieSessionAuthenticationStrategy.setTokenStringSerializer(tokenCookieJweStringSerializer);
 
+        tokenCookieSessionAuthenticationStrategy.setTokenStringSerializer(tokenCookieJweStringSerializer);
+        tokenCookieSessionAuthenticationStrategy.setTokenCookieFactory(defaultTokenCookieFactory(userService));
 
         http.with(tokenCookieAuthenticationConfigurer, Customizer.withDefaults())
                 .formLogin(form -> form
@@ -88,6 +94,11 @@ public class SecurityConfig {
         return http.build();
     }
 
+
+    @Bean
+    public DefaultTokenCookieFactory defaultTokenCookieFactory(UserService userService) {
+        return new DefaultTokenCookieFactory(userService);
+    }
 //    @Bean
 //    public UserDetailsService userDetailsService(JdbcTemplate jdbcTemplate) {
 //        return username -> jdbcTemplate.query("select * from t_user where c_username = ?",

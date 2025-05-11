@@ -20,6 +20,11 @@ public class UserService {
         return userRepository.findByPhone(username);
     }
 
+    public User findById(int id) {
+        return userRepository.findById(id);
+    }
+
+
     public User registerUser(User user) {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));

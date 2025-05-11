@@ -1,5 +1,7 @@
 package com.shirobokov.creditpipelineusers.config.jwtauth.token;
 
+import com.shirobokov.creditpipelineusers.entity.User;
+import com.shirobokov.creditpipelineusers.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -12,13 +14,31 @@ public class DefaultTokenCookieFactory implements Function<Authentication, Token
 
     private Duration tokenTtl = Duration.ofDays(1);
 
+    private final UserService userService;
+
+    public DefaultTokenCookieFactory(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public Token apply(Authentication authentication) {
 
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        if (userService != null){
+            System.out.println("Все норм");
+        }
+        else{
+            System.out.println("Равен null");
+        }
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
         var now = Instant.now();
 
-        return new Token(UUID.randomUUID(), authentication.getName(), authentication.getAuthorities().
+        User user = userService.findByPhone(authentication.getName());
+
+        return new Token(UUID.randomUUID(), String.valueOf(user.getId()), authentication.getAuthorities().
                 stream().map(GrantedAuthority::getAuthority).toList(), now, now.plus(tokenTtl));
     }
 
