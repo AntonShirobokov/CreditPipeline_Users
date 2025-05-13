@@ -7,6 +7,7 @@ import org.springframework.validation.Validator;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 
 @Component
 public class PassportValidator implements Validator {
@@ -36,10 +37,10 @@ public class PassportValidator implements Validator {
             errors.rejectValue("number", "passport.number.invalid", "Номер паспорта должен состоять из 6 цифр");
         }
 
-//        // Проверка даты рождения
-//        if (!isValidDate(passport.getBirthDate())) {
-//            errors.rejectValue("birthDate", "passport.birthDate.invalid", "Дата рождения должна быть в формате DD.MM.YYYY");
-//        }
+        // Проверка даты рождения
+        if (!isValidDate(passport.getBirthDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")))) {
+            errors.rejectValue("birthDate", "passport.birthDate.invalid", "Дата рождения должна быть в формате DD.MM.YYYY");
+        }
 
         // Проверка места рождения (не пустое и адекватной длины)
         if (passport.getBirthPlace() == null || passport.getBirthPlace().trim().length() < 3) {
@@ -60,10 +61,10 @@ public class PassportValidator implements Validator {
             errors.rejectValue("issuedBy", "passport.issuedBy.tooLong", "Поле 'Кем выдан' не должно превышать 255 символов");
         }
 
-//        // Проверка даты выдачи
-//        if (!isValidDate(passport.getIssueDate())) {
-//            errors.rejectValue("issueDate", "passport.issueDate.invalid", "Дата выдачи должна быть в формате DD.MM.YYYY");
-//        }
+        // Проверка даты выдачи
+        if (!isValidDate(passport.getIssueDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")))) {
+            errors.rejectValue("issueDate", "passport.issueDate.invalid", "Дата выдачи должна быть в формате DD.MM.YYYY");
+        }
 
         // Проверка ИНН (12 цифр)
         if (!passport.getInn().matches("\\d{12}")) {

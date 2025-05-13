@@ -41,7 +41,7 @@ public class UserValidator implements Validator {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "lastName.empty", "Поле \"Фамилия\" не может быть пустой");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "firstName.empty", "Поле \"Имя\" не может быть пустым");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "middleName", "middleName.empty", "Поле \"Отчество\" не может быть пустым");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "email.empty", "Поле \"Почта\" не может быть пустым");
+
 
         // Проверка телефона
         if (user.getPhone() != null && !user.getPhone().isEmpty() && !user.getPhone().matches(PHONE_REGEX)) {

@@ -23,17 +23,6 @@ public class DefaultTokenCookieFactory implements Function<Authentication, Token
     @Override
     public Token apply(Authentication authentication) {
 
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        if (userService != null){
-            System.out.println("Все норм");
-        }
-        else{
-            System.out.println("Равен null");
-        }
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
         var now = Instant.now();
 
         User user = userService.findByPhone(authentication.getName());

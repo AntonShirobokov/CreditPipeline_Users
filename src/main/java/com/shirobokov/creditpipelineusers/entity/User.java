@@ -4,6 +4,8 @@ package com.shirobokov.creditpipelineusers.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name="t_user")
 @AllArgsConstructor
@@ -40,6 +42,8 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Passport passport;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Application> applications;
 
     @Override
     public String toString() {

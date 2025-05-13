@@ -75,5 +75,22 @@ public class Passport {
                 ", registrationAddress='" + registrationAddress + '\'' +
                 '}';
     }
+
+    public boolean isValid() {
+        return isNotBlank(series) &&
+                isNotBlank(number) &&
+                birthDate != null &&
+                isNotBlank(birthPlace) &&
+                isNotBlank(departmentCode) &&
+                isNotBlank(issuedBy) &&
+                issueDate != null &&
+                isNotBlank(inn) &&
+                isNotBlank(snils) &&
+                isNotBlank(registrationAddress);
+    }
+
+    private boolean isNotBlank(String value) {
+        return value != null && !value.trim().isEmpty();
+    }
 }
 

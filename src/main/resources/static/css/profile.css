@@ -89,3 +89,111 @@ h1 {
     color: #475569;
     min-width: 180px;
 }
+
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%; /* размещение под input */
+    left: 0;
+    background: white;
+    border: 1px solid #ccc;
+    list-style: none;
+    margin: 4px 0 0 0;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 999;
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+}
+
+.autocomplete-dropdown li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.autocomplete-dropdown li:hover {
+    background-color: #f0f0f0;
+}
+
+
+/* Кнопки редактирования и сохранения */
+button {
+    background-color: #6366f1;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #4f46e5;
+}
+
+/* Поля ввода при редактировании */
+input.field {
+    border: 1px solid #cbd5e1;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 16px;
+    color: #1e293b;
+    flex-grow: 1;
+    min-width: 250px;
+    transition: border 0.2s;
+}
+
+input.field:focus {
+    border-color: #6366f1;
+    outline: none;
+}
+
+.row {
+    margin-bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: #334155;
+    position: relative; /* <-- добавлено */
+    align-items: center;
+}
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .main-nav {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .label {
+        min-width: 100%;
+    }
+
+    input.field {
+        width: 100%;
+    }
+
+    .row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    button {
+        width: 100%;
+    }
+}
+
+.field-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 250px;
+}
+
+.field-error {
+    color: #dc2626;
+    font-size: 14px;
+    margin-top: 4px;
+}

@@ -8,18 +8,73 @@ const addressFields = ['registrationAddress'];
 const editBtn = document.getElementById('edit-btn');
 const saveBtn = document.getElementById('save-btn');
 
-// Универсальная функция редактирования
+function setupAddressAutocomplete(input) {
+    const dropdown = document.createElement('ul');
+    dropdown.className = 'autocomplete-dropdown';
+    input.parentNode.appendChild(dropdown);
+
+    input.addEventListener('input', async () => {
+        const query = input.value.trim();
+        dropdown.innerHTML = '';
+
+        if (query.length < 3) return;
+
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5&countrycodes=ru`);
+
+            const results = await res.json();
+
+            results.forEach(place => {
+                const addr = place.address;
+                const formatted = [
+                    addr.state,               // Республика / область
+                    addr.county,              // Район
+                    addr.city || addr.town || addr.village, // Населённый пункт
+                    addr.road,                // Улица
+                    addr.house_number         // Дом
+                ].filter(Boolean).join(', '); // Убирает пустые значения и соединяет
+
+                const item = document.createElement('li');
+                item.textContent = formatted;
+                item.addEventListener('click', () => {
+                    input.value = formatted;
+                    dropdown.innerHTML = '';
+                });
+                dropdown.appendChild(item);
+            });
+        } catch (e) {
+            console.error('Ошибка автоподсказки адреса:', e);
+        }
+    });
+
+    input.addEventListener('blur', () => {
+        setTimeout(() => dropdown.innerHTML = '', 100); // скрыть подсказки с задержкой
+    });
+}
+
+
+
 function enableEditing(fieldKeys, section) {
     fieldKeys.forEach(key => {
         const span = document.querySelector(`${section} .field[data-field="${key}"]`);
         if (!span) return;
         const value = span.textContent.trim();
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('field-wrapper');
+
         const input = document.createElement('input');
         input.name = key;
         input.value = value !== '-' ? value : '';
         input.classList.add('field');
         input.setAttribute('data-field', key);
-        span.replaceWith(input);
+
+        wrapper.appendChild(input);
+        span.replaceWith(wrapper);
+
+        // Добавляем автозаполнение только для адреса
+        if (key === 'registrationAddress') {
+            setupAddressAutocomplete(input);
+        }
     });
 }
 
@@ -64,11 +119,33 @@ async function saveSection(data, endpoint) {
             alert("Данные обновлены");
             location.reload();
         } else {
-            alert("Ошибка обновления");
+            const result = await res.json();
+            if (result.errors) {
+                showFieldErrors(result.errors);
+            } else {
+                alert("Ошибка обновления");
+            }
         }
     } catch (err) {
         alert("Ошибка запроса: " + err.message);
     }
+}
+
+function showFieldErrors(errors) {
+    document.querySelectorAll('.field-error').forEach(el => el.remove());
+
+    Object.entries(errors).forEach(([field, message]) => {
+        const input = document.querySelector(`input[name="${field}"]`);
+        if (input) {
+            const wrapper = input.closest('.field-wrapper');
+            if (wrapper) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'field-error';
+                errorDiv.textContent = message;
+                wrapper.appendChild(errorDiv);
+            }
+        }
+    });
 }
 
 // Обработка ФИО и контактов

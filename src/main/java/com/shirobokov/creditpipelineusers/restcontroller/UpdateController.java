@@ -7,8 +7,10 @@ import com.shirobokov.creditpipelineusers.entity.Passport;
 import com.shirobokov.creditpipelineusers.entity.User;
 import com.shirobokov.creditpipelineusers.service.PassportService;
 import com.shirobokov.creditpipelineusers.service.UserService;
+import com.shirobokov.creditpipelineusers.util.AddressValidator;
 import com.shirobokov.creditpipelineusers.util.PassportValidator;
 import com.shirobokov.creditpipelineusers.util.UserValidator;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,11 +40,16 @@ public class UpdateController {
 
     private final PassportValidator passportValidator;
 
-    public UpdateController(UserService userService, PassportService passportService, UserValidator userValidator, PassportValidator passportValidator) {
+    private final AddressValidator addressValidator;
+
+    public UpdateController(UserService userService, PassportService passportService,
+                            UserValidator userValidator, PassportValidator passportValidator,
+                            AddressValidator addressValidator) {
         this.userService = userService;
         this.passportService = passportService;
         this.userValidator = userValidator;
         this.passportValidator = passportValidator;
+        this.addressValidator = addressValidator;
     }
 
 
@@ -100,6 +107,36 @@ public class UpdateController {
         return ResponseEntity.ok(updatedPassport);
     }
 
+
+    @PostMapping("/api/user/update-address")
+    @ResponseBody
+    public ResponseEntity<?> updateAddress(@RequestBody @Validated Passport updatedPassport, BindingResult bindingResult) {
+        System.out.println("Новые данные паспотра" + updatedPassport);
+
+        TokenUser tokenUser = (TokenUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        User currentUser = userService.findById(Integer.parseInt(tokenUser.getToken().subject()));
+
+        Passport oldPassport = currentUser.getPassport();
+
+        System.out.println("Старый паспорт" + updatedPassport);
+
+        addressValidator.validate(updatedPassport, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors= new HashMap<>();
+
+            bindingResult.getFieldErrors().forEach(err ->
+                    errors.put(err.getField(), err.getDefaultMessage()));
+
+            return ResponseEntity.badRequest().body(Map.of("errors", errors));
+        }
+
+        passportService.updateAddressPassport(oldPassport, updatedPassport);
+
+        return ResponseEntity.ok(updatedPassport);
+
+    }
 
 
 }

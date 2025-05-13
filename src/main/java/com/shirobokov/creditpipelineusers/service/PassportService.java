@@ -32,4 +32,9 @@ public class PassportService {
 
         return passportRepository.save(oldPassport);
     }
+
+    public Passport updateAddressPassport(Passport oldPassport, Passport updatedPassport) {
+        oldPassport.setRegistrationAddress(updatedPassport.getRegistrationAddress());
+        return passportRepository.save(oldPassport);
+    }
 }
