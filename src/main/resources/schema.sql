@@ -44,71 +44,77 @@ create table t_deactivated_token
     c_keep_until timestamp not null check ( c_keep_until > now() )
 );
 
--- Создание ENUM типов
-CREATE TYPE c_purpose_enum AS ENUM (
-    'Автомобиль',
-    'Ремонт',
-    'Образование',
-    'Рефинансирование',
-    'Другое'
-    );
+-- -- Создание ENUM типов
+-- CREATE TYPE c_purpose_enum AS ENUM (
+--     'Автомобиль',
+--     'Ремонт',
+--     'Образование',
+--     'Рефинансирование',
+--     'Другое'
+--     );
+--
+-- CREATE TYPE c_type_of_employment_enum AS ENUM (
+--     'Предприниматель',
+--     'Работа по найму',
+--     'Студент',
+--     'Пенсионер',
+--     'Безработный'
+--     );
+--
+-- CREATE TYPE c_deposit_enum AS ENUM (
+--     'Недвижимость',
+--     'Транспортное средство',
+--     'Отсутствует'
+--     );
+--
+-- CREATE TYPE c_education_enum AS ENUM (
+--     'Отсутствует',
+--     'Основное общее',
+--     'Среднее общее',
+--     'Среднее профессиональное',
+--     'Высшее'
+--     );
+--
+-- CREATE TYPE c_type_of_housing_enum AS ENUM (
+--     'Собственное',
+--     'Съемное',
+--     'Проживаю с родственниками'
+--     );
+--
+-- CREATE TYPE c_marital_status_enum AS ENUM (
+--     'Никогда не состоял(а)',
+--     'Замужем/женат',
+--     'Разведен/разведена',
+--     'Вдова/вдовец'
+--     );
+--
+-- CREATE TYPE c_status_enum AS ENUM (
+--     'В рассмотрении',
+--     'Ошибка оформления',
+--     'Одобрено',
+--     'Отказано'
+--     );
 
-CREATE TYPE c_type_of_employment_enum AS ENUM (
-    'Предприниматель',
-    'Работа по найму',
-    'Студент',
-    'Пенсионер',
-    'Безработный'
-    );
 
-CREATE TYPE c_deposit_enum AS ENUM (
-    'Недвижимость',
-    'Транспортное средство',
-    'Отсутствует'
-    );
 
-CREATE TYPE c_education_enum AS ENUM (
-    'Отсутствует',
-    'Основное общее',
-    'Среднее общее',
-    'Среднее профессиональное',
-    'Высшее'
-    );
-
-CREATE TYPE c_type_of_housing_enum AS ENUM (
-    'Собственное',
-    'Съемное',
-    'Проживаю с родственниками'
-    );
-
-CREATE TYPE c_marital_status_enum AS ENUM (
-    'Никогда не состоял(а)',
-    'Замужем/женат',
-    'Разведен/разведена',
-    'Вдова/вдовец'
-    );
-
-CREATE TYPE c_status_enum AS ENUM (
-    'В рассмотрении',
-    'Ошибка оформления',
-    'Одобрено',
-    'Отказано'
-    );
 
 -- Создание таблицы Application
 CREATE TABLE t_application (
-                             id SERIAL PRIMARY KEY,
-                             id_user INT REFERENCES t_user(id),
-                             c_amount INT,
-                             c_period INT,
-                             c_purpose c_purpose_enum,
-                             c_type_of_employment c_type_of_employment_enum,
-                             c_deposit c_deposit_enum,
-                             c_dept INT,
-                             c_education c_education_enum,
-                             c_type_of_housing c_type_of_housing_enum,
-                             c_number_of_dependents INT,
-                             c_marital_status c_marital_status_enum,
-                             с_status c_status_enum,
-                             с_reason_for_refusal varchar
+id SERIAL PRIMARY KEY,
+id_user INT REFERENCES t_user(id),
+c_amount INT,
+c_period INT,
+c_purpose varchar,
+c_type_of_employment varchar,
+c_deposit varchar,
+c_income int,
+c_dept INT,
+c_education varchar,
+c_type_of_housing varchar,
+c_number_of_dependents INT,
+c_marital_status varchar,
+c_status varchar,
+c_reason_for_refusal varchar,
+c_real_income int,
+c_was_bankrupt boolean
 );
