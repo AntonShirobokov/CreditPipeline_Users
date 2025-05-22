@@ -3,6 +3,7 @@ drop table if exists t_user cascade;
 drop table if exists t_passport;
 drop table if exists t_deactivated_token;
 drop table if exists t_deactivated_token;
+drop table if exists t_application;
 
 create table t_user
 (
@@ -116,5 +117,6 @@ c_marital_status varchar,
 c_status varchar,
 c_reason_for_refusal varchar,
 c_real_income int,
-c_was_bankrupt boolean
+c_was_bankrupt boolean,
+c_date_of_creation date
 );

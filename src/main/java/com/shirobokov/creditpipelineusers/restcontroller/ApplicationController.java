@@ -2,23 +2,22 @@ package com.shirobokov.creditpipelineusers.restcontroller;
 
 
 import com.shirobokov.creditpipelineusers.config.jwtauth.token.TokenUser;
+import com.shirobokov.creditpipelineusers.dto.ApplicationDto;
 import com.shirobokov.creditpipelineusers.entity.Application;
-import com.shirobokov.creditpipelineusers.entity.Passport;
 import com.shirobokov.creditpipelineusers.entity.User;
-import com.shirobokov.creditpipelineusers.entity.enums.ApplicationEnums;
+import com.shirobokov.creditpipelineusers.mapper.ApplicationMapper;
 import com.shirobokov.creditpipelineusers.service.ApplicationService;
 import com.shirobokov.creditpipelineusers.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 public class ApplicationController {
@@ -27,9 +26,32 @@ public class ApplicationController {
 
     private final ApplicationService applicationService;
 
-    public ApplicationController(UserService userService, ApplicationService applicationService) {
+    private final ApplicationMapper applicationMapper;
+
+    public ApplicationController(UserService userService, ApplicationService applicationService, ApplicationMapper applicationMapper) {
         this.userService = userService;
         this.applicationService = applicationService;
+        this.applicationMapper = applicationMapper;
+    }
+
+    @GetMapping("/api/getAllApplications")
+    @ResponseBody
+    public ResponseEntity<?> getAllApplications() {
+        TokenUser tokenUser = (TokenUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        User currentUser = userService.findById(Integer.parseInt(tokenUser.getToken().subject()));
+
+
+
+        List<ApplicationDto> applicationsDto =
+                currentUser.getApplications().stream()
+                        .map(application -> applicationMapper.toApplicationDto(application))
+                        .collect(Collectors.toList());
+
+
+        System.out.println("Тестирование Dto: " + applicationsDto);
+
+        return ResponseEntity.ok(applicationsDto);
     }
 
     @PostMapping("/api/credit/checkInformation")
@@ -60,17 +82,20 @@ public class ApplicationController {
 
         System.out.println(application);
 
+        application.setDateOfCreation(LocalDate.now());
 
 
         // 1. Проверка паспорта
         String passportCheckResult = checkPassport(currentUser.getPassport().getSeries(),
                 currentUser.getPassport().getNumber());
 
-        if (!passportCheckResult.equals("паспорт действителен")) {
+        System.out.println("Отладка:" + passportCheckResult);
+
+        if (!passportCheckResult.equals("Паспорт действителен")) {
             application.setStatus("Ошибка оформления");
-            application.setReasonForRefusal("Недействительный паспорт");
+            application.setReasonForRefusal(passportCheckResult);
             applicationService.save(application);
-            return ResponseEntity.ok(Map.of("valid", false, "message", "Паспорт недействителен"));
+            return ResponseEntity.ok(Map.of("valid", false, "message", passportCheckResult));
         }
 
         // 2. Проверка задолженности
@@ -112,15 +137,29 @@ public class ApplicationController {
 
     // Вспомогательные методы для вызова REST-сервиса
     private String checkPassport(String series, String number) {
+
+        System.out.println("Данные паспорта:" + series + " " + number);
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://localhost:8080/api/passport-check?series={series}&number={number}";
 
         try {
-            return restTemplate.getForObject(url, String.class, series, number);
+            Map<String, Object> response = restTemplate.getForObject(url, Map.class, series, number);
+
+            System.out.println("Что в hashMap" + response);
+            if (response.containsKey("message")) {
+                System.out.println("Отладка еще одна: " + response.get("message").toString());
+                return response.get("message").toString();
+            }
+            else {
+                return "Пользователя с таким паспортом не существует";
+            }
         } catch (Exception e) {
-            return "ошибка при проверке паспорта";
+            return "Ошибка при проверке паспорта";
         }
     }
+
+
+
 
     private String checkDebt(String series, String number) {
         RestTemplate restTemplate = new RestTemplate();

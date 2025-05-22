@@ -4,6 +4,8 @@ import com.shirobokov.creditpipelineusers.entity.enums.ApplicationEnums.*;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "t_application")
 @Getter
@@ -73,6 +75,8 @@ public class Application {
     @Column(name="c_real_income")
     private Integer realIncome;
 
+    @Column(name="c_date_of_creation")
+    private LocalDate dateOfCreation;
     @Override
     public String toString() {
         return "Application{" +

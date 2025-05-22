@@ -67,6 +67,9 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .defaultSuccessUrl("/credit")
                         .permitAll())
+                .logout(logout -> logout.logoutSuccessUrl("/").addLogoutHandler((request, response, authentication) -> {
+
+                }))
                 .addFilterAfter(new GetCsrfTokenFilter(), ExceptionTranslationFilter.class)
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests

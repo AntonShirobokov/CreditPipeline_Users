@@ -10,8 +10,10 @@
 <body>
 <div class="main-container">
     <header class="main-header">
-        <div class="logo">Prime<span>Bank</span></div>
+        <!-- Обновлено: логотип стал ссылкой -->
+        <a href="/credit" class="logo">Prime<span>Bank</span></a>
         <nav class="main-nav">
+            <a href="/applications" class="nav-link">Заявки</a>
             <a href="/profile" class="nav-link">Профиль</a>
         </nav>
     </header>
@@ -53,6 +55,12 @@
             <button class="edit-btn" data-section="address">Редактировать</button>
             <button class="save-btn" data-section="address" style="display:none;">Сохранить</button>
         </div>
+
+        <form action="/logout" method="POST" style="margin-top: 40px; align-self: flex-start;">
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+            <button type="submit">Выйти</button>
+        </form>
+
     </main>
     <script src="/js/profile.js"></script>
 

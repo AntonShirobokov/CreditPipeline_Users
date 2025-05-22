@@ -1,0 +1,174 @@
+/* Общий контейнер и структура */
+.main-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+    text-decoration: none;
+}
+
+.logo span {
+    color: #6366f1;
+}
+
+.main-nav {
+    display: flex;
+    gap: 32px;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: #6366f1;
+}
+
+
+
+/* Секция заявок */
+.applications-section {
+    padding: 32px 0;
+}
+
+.applications-title {
+    font-size: 26px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 24px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.applications-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Карточка заявки */
+.app-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.app-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.app-date {
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+.app-amount {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1e293b;
+}
+
+.app-purpose {
+    font-size: 14px;
+    color: #475569;
+}
+
+.app-status {
+    padding: 6px 14px;
+    font-size: 14px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-family: 'Segoe UI', sans-serif;
+    white-space: nowrap;
+}
+
+/* Цвета статусов */
+.status-approved {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.status-declined {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.status-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-error {
+    background-color: #f3f4f6;
+    color: #6b7280;
+}
+
+.status-default {
+    background-color: #e5e7eb;
+    color: #334155;
+}
+
+/* Состояние без заявок */
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    border: 2px dashed #e2e8f0;
+    border-radius: 10px;
+    background-color: #f8fafc;
+}
+
+.empty-state p {
+    font-size: 18px;
+    color: #64748b;
+    margin-bottom: 16px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.btn-new-app {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #6366f1;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn-new-app:hover {
+    background-color: #4f46e5;
+}
+
+.error-msg {
+    text-align: center;
+    color: #dc2626;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
