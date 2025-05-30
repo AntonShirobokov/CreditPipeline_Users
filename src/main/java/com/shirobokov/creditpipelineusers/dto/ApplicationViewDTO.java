@@ -1,14 +1,14 @@
 package com.shirobokov.creditpipelineusers.dto;
 
 
-import com.shirobokov.creditpipelineusers.entity.User;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
-public class ApplicationDto {
+public class ApplicationViewDTO {
 
     private int id;
 
@@ -22,6 +22,6 @@ public class ApplicationDto {
 
     private String reasonForRefusal;
 
-    private String dateOfCreation;
+    private LocalDateTime dateOfCreation;
 
 }

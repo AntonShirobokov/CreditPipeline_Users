@@ -2,22 +2,25 @@ package com.shirobokov.creditpipelineusers.restcontroller;
 
 
 import com.shirobokov.creditpipelineusers.config.jwtauth.token.TokenUser;
-import com.shirobokov.creditpipelineusers.dto.ApplicationDto;
+import com.shirobokov.creditpipelineusers.dto.ApplicationMLInputDTO;
+import com.shirobokov.creditpipelineusers.dto.ApplicationViewDTO;
 import com.shirobokov.creditpipelineusers.entity.Application;
 import com.shirobokov.creditpipelineusers.entity.User;
 import com.shirobokov.creditpipelineusers.mapper.ApplicationMapper;
 import com.shirobokov.creditpipelineusers.service.ApplicationService;
 import com.shirobokov.creditpipelineusers.service.UserService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 public class ApplicationController {
@@ -41,15 +44,10 @@ public class ApplicationController {
 
         User currentUser = userService.findById(Integer.parseInt(tokenUser.getToken().subject()));
 
-
-
-        List<ApplicationDto> applicationsDto =
+        List<ApplicationViewDTO> applicationsDto =
                 currentUser.getApplications().stream()
-                        .map(application -> applicationMapper.toApplicationDto(application))
+                        .map(applicationMapper::toApplicationViewDto)
                         .collect(Collectors.toList());
-
-
-        System.out.println("Тестирование Dto: " + applicationsDto);
 
         return ResponseEntity.ok(applicationsDto);
     }
@@ -64,7 +62,6 @@ public class ApplicationController {
         if (currentUser.getPassport().isValid()){
             return ResponseEntity.ok(Map.of("valid", true));
         } else {
-            System.out.println(currentUser.getPassport());
             return ResponseEntity.ok(Map.of("valid", false));
         }
 
@@ -79,17 +76,14 @@ public class ApplicationController {
         User currentUser = userService.findById(Integer.parseInt(tokenUser.getToken().subject()));
 
         application.setUser(currentUser);
-
-        System.out.println(application);
-
-        application.setDateOfCreation(LocalDate.now());
-
+        application.setDateOfCreation(LocalDateTime.now());
+        application.setAge(Period.between(currentUser.getPassport().getBirthDate(),LocalDate.now()).getYears());
 
         // 1. Проверка паспорта
         String passportCheckResult = checkPassport(currentUser.getPassport().getSeries(),
                 currentUser.getPassport().getNumber());
 
-        System.out.println("Отладка:" + passportCheckResult);
+        System.out.println("Отладка: " + passportCheckResult);
 
         if (!passportCheckResult.equals("Паспорт действителен")) {
             application.setStatus("Ошибка оформления");
@@ -98,17 +92,25 @@ public class ApplicationController {
             return ResponseEntity.ok(Map.of("valid", false, "message", passportCheckResult));
         }
 
-        // 2. Проверка задолженности
-        String debtCheckResult = checkDebt(currentUser.getPassport().getSeries(),
+        // 2. Проверка задолженности — теперь возвращаем Map с ключами cWasBankrupt и totalDebt
+        Map<String, Object> debtCheckResult = checkDebt(currentUser.getPassport().getSeries(),
                 currentUser.getPassport().getNumber());
 
-        if (debtCheckResult.startsWith("задолженности обнаружены")) {
-            // Извлекаем сумму долга из строки ответа
-            String debtAmountStr = debtCheckResult.replaceAll("[^0-9]", "");
-            int debtAmount = debtAmountStr.isEmpty() ? 0 : Integer.parseInt(debtAmountStr);
-
+        if (debtCheckResult.containsKey("cWasBankrupt") && Boolean.TRUE.equals(debtCheckResult.get("cWasBankrupt"))) {
             application.setWasBankrupt(true);
-            application.setDept(debtAmount);
+
+            // Берём сумму долга из totalDebt, учитывая возможный тип
+            Object totalDebtObj = debtCheckResult.get("totalDebt");
+            int totalDebt = 0;
+            if (totalDebtObj instanceof Number) {
+                totalDebt = ((Number) totalDebtObj).intValue();
+            } else if (totalDebtObj instanceof String) {
+                try {
+                    totalDebt = Integer.parseInt((String) totalDebtObj);
+                } catch (NumberFormatException ignored) {}
+            }
+
+            application.setDept(totalDebt);
         } else {
             application.setWasBankrupt(false);
             application.setDept(0);
@@ -128,7 +130,7 @@ public class ApplicationController {
 
         application.setStatus("В рассмотрении");
 
-        // Сохраняем обновленную заявку
+        scoreApplication(application);
 
         applicationService.save(application);
 
@@ -158,17 +160,17 @@ public class ApplicationController {
         }
     }
 
-
-
-
-    private String checkDebt(String series, String number) {
+    // Новый метод checkDebt, который возвращает Map<String, Object>
+    private Map<String, Object> checkDebt(String series, String number) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://localhost:8080/api/debt-check?series={series}&number={number}";
 
         try {
-            return restTemplate.getForObject(url, String.class, series, number);
+            // Возвращаем Map, а не String
+            Map<String, Object> response = restTemplate.getForObject(url, Map.class, series, number);
+            return response != null ? response : Collections.emptyMap();
         } catch (Exception e) {
-            return "ошибка при проверке задолженности";
+            return Collections.emptyMap();
         }
     }
 
@@ -183,4 +185,49 @@ public class ApplicationController {
         }
     }
 
+    private Application scoreApplication(Application application) {
+        ApplicationMLInputDTO applicationMLInputDTO = applicationMapper.toApplicationMLInputDTO(application);
+
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://127.0.0.1:8000/predict";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<ApplicationMLInputDTO> request = new HttpEntity<>(applicationMLInputDTO, headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                Map<String, Object> responseBody = response.getBody();
+
+                Boolean rejected = (Boolean) responseBody.get("rejected");
+                if (Boolean.TRUE.equals(rejected)) {
+                    String reason = (String) responseBody.get("reason");
+
+                    application.setStatus("Отказано");
+                    application.setReasonForRefusal(reason);
+
+                    System.out.println("Заявка отклонена: " + reason);
+                    return application;
+                }
+
+                Float score = ((Number) responseBody.get("score")).floatValue();
+                Float percentageRate = ((Number) responseBody.get("c_percentage_rate")).floatValue();
+
+                System.out.println("Оценка: " + score);
+                System.out.println("Ставка:  " + percentageRate);
+
+                application.setScore(score);
+                application.setPercentageRate(percentageRate);
+            } else {
+                throw new RuntimeException("Ошибка при получении ответа от сервиса ML");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при обращении к сервису ML: " + e.getMessage(), e);
+        }
+
+        return application;
+    }
 }

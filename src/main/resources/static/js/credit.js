@@ -97,6 +97,39 @@ window.addEventListener('DOMContentLoaded', () => {
                     </form>
                 `;
 
+                const creditForm = document.getElementById('credit-form');
+
+                creditForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+
+                    const formData = new FormData(creditForm);
+
+                    fetch('/api/credit/applicationProcessing', {
+                        method: 'POST',
+                        headers: {
+                            [csrfHeaderName]: csrfToken
+                        },
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.valid) {
+                                document.getElementById('main-content').innerHTML = `
+                                <p style="color:red;">Ошибка: ${data.message}</p>
+                                <p><a href="/credit">Вернуться к заявке</a></p>
+                            `;
+                            } else {
+                                document.getElementById('main-content').innerHTML = `
+                                    <p style="color:green;">Заявка успешно отправлена!</p>
+                                    <p><a href="/applications">Перейти к списку заявок</a></p>
+                                `;
+                            }
+                        })
+                        .catch(error => {
+                            document.getElementById('main-content').innerHTML = `<p style="color:red;">Ошибка отправки: ${error.message}</p>`;
+                        });
+                });
+
                 const employmentSelect = document.getElementById('employment-select');
                 const employmentFields = document.getElementById('employment-fields');
 

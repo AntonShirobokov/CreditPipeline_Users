@@ -103,6 +103,7 @@ create table t_deactivated_token
 CREATE TABLE t_application (
 id SERIAL PRIMARY KEY,
 id_user INT REFERENCES t_user(id),
+id_employee INT REFERENCES t_employee(id),
 c_amount INT,
 c_period INT,
 c_purpose varchar,
@@ -114,9 +115,13 @@ c_education varchar,
 c_type_of_housing varchar,
 c_number_of_dependents INT,
 c_marital_status varchar,
+c_age int,
 c_status varchar,
 c_reason_for_refusal varchar,
 c_real_income int,
 c_was_bankrupt boolean,
-c_date_of_creation date
+c_date_of_creation timestamp without time zone,
+c_score float,
+c_percentage_rate float,
+c_date_of_review timestamp without time zone
 );

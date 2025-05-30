@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "t_application")
@@ -23,21 +24,25 @@ public class Application {
     @JoinColumn(name = "id_user")
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="id_employee")
+    private Employee employee;
+
     @Column(name = "c_amount")
     private Integer amount;
 
     @Column(name = "c_period")
     private Integer period;
 
-    //@Enumerated(EnumType.STRING)
     @Column(name = "c_purpose")
     private String purpose;
 
-    //@Enumerated(EnumType.STRING)
+    @Column(name="c_age")
+    private Integer age;
+
     @Column(name = "c_type_of_employment")
     private String typeOfEmployment;
 
-    //@Enumerated(EnumType.STRING)
     @Column(name = "c_deposit")
     private String deposit;
 
@@ -47,22 +52,18 @@ public class Application {
     @Column(name = "c_dept")
     private Integer dept;
 
-    //@Enumerated(EnumType.STRING)
     @Column(name = "c_education")
     private String education;
 
-    //@Enumerated(EnumType.STRING)
     @Column(name = "c_type_of_housing")
     private String typeOfHousing;
 
     @Column(name = "c_number_of_dependents")
     private Integer numberOfDependents;
 
-    //@Enumerated(EnumType.STRING)
     @Column(name = "c_marital_status")
     private String maritalStatus;
 
-    //@Enumerated(EnumType.STRING)
     @Column(name = "c_status")
     private String status;
 
@@ -76,7 +77,17 @@ public class Application {
     private Integer realIncome;
 
     @Column(name="c_date_of_creation")
-    private LocalDate dateOfCreation;
+    private LocalDateTime dateOfCreation;
+
+    @Column(name="c_score")
+    private Float score;
+
+    @Column(name="c_percentage_rate")
+    private Float percentageRate;
+
+    @Column(name="c_date_of_review")
+    private LocalDateTime dateOfReview;
+
     @Override
     public String toString() {
         return "Application{" +

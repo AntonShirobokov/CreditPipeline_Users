@@ -67,9 +67,6 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .defaultSuccessUrl("/credit")
                         .permitAll())
-                .logout(logout -> logout.logoutSuccessUrl("/").addLogoutHandler((request, response, authentication) -> {
-
-                }))
                 .addFilterAfter(new GetCsrfTokenFilter(), ExceptionTranslationFilter.class)
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
@@ -86,14 +83,6 @@ public class SecurityConfig {
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                         .sessionAuthenticationStrategy((authentication, request, response) -> {}));
 
-        // Устарел найти новый способ
-
-        //http.apply(tokenCookieAuthenticationConfigurer);
-
-        // Возможный вариант решения
-
-        //tokenCookieAuthenticationConfigurer.configure(http);
-
         return http.build();
     }
 
@@ -102,19 +91,6 @@ public class SecurityConfig {
     public DefaultTokenCookieFactory defaultTokenCookieFactory(UserService userService) {
         return new DefaultTokenCookieFactory(userService);
     }
-//    @Bean
-//    public UserDetailsService userDetailsService(JdbcTemplate jdbcTemplate) {
-//        return username -> jdbcTemplate.query("select * from t_user where c_username = ?",
-//                (rs, i) -> User.builder()
-//                        .username(rs.getString("c_username"))
-//                        .password(rs.getString("c_password"))
-//                        .authorities(
-//                                jdbcTemplate.query("select c_authority from t_user_authority where id_user = ?",
-//                                        (rs1, i1) ->
-//                                                new SimpleGrantedAuthority(rs1.getString("c_authority")),
-//                                        rs.getInt("id")))
-//                        .build(), username).stream().findFirst().orElse(null);
-//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

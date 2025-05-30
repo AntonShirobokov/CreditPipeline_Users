@@ -17,8 +17,6 @@ public class RegistrationController {
 
     private final UserService userService;
 
-
-
     @GetMapping("/registration")
     public String registrationPage(Model model) {
         model.addAttribute("user", new User());
@@ -30,15 +28,14 @@ public class RegistrationController {
 
         if (userService.findByPhone(user.getPhone()) != null) {
 
-            System.out.println("Такой номер телефона уже зарегестрирован");
-
             user.setPhone(user.getPhone().substring(3));
 
             model.addAttribute("usernameError", "Такой номер телефона уже зарегестрирован");
+
             return "registration";
         }
-        userService.registerUser(user);
 
+        userService.registerUser(user);
 
         return "redirect:/";
     }

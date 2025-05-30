@@ -12,12 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/")
 public class MainController {
-
     @GetMapping
     public String index() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        // Проверяем, что пользователь действительно аутентифицирован (не анонимный)
         if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
             return "redirect:/credit";
         } else {

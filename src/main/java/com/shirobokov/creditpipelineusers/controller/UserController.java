@@ -29,7 +29,6 @@ public class UserController {
         TokenUser tokenUser = (TokenUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         User user = userService.findById(Integer.parseInt(tokenUser.getToken().subject()));
-
         Passport passport = user.getPassport();
 
         model.addAttribute("user", user);
@@ -40,10 +39,6 @@ public class UserController {
 
     @GetMapping("/applications")
     public String applications(Model model) {
-
-        TokenUser tokenUser = (TokenUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        User user = userService.findById(Integer.parseInt(tokenUser.getToken().subject()));
 
         return "applications";
     }

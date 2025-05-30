@@ -52,11 +52,9 @@ public class UpdateController {
         this.addressValidator = addressValidator;
     }
 
-
     @PostMapping("/api/user/update-contact")
     @ResponseBody
     public ResponseEntity<?> updateContact(@RequestBody @Validated User updatedUser, BindingResult bindingResult) {
-
         TokenUser tokenUser = (TokenUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         User currentUser = userService.findById(Integer.parseInt(tokenUser.getToken().subject())); // авторизованный пользователь
@@ -81,24 +79,17 @@ public class UpdateController {
     @PostMapping("/api/user/update-passport")
     @ResponseBody
     public ResponseEntity<?> updatePassport(@RequestBody @Validated Passport updatedPassport, BindingResult bindingResult) {
-        System.out.println("Новые данные паспотра" + updatedPassport);
-
         TokenUser tokenUser = (TokenUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         User currentUser = userService.findById(Integer.parseInt(tokenUser.getToken().subject()));
 
         Passport oldPassport = currentUser.getPassport();
 
-        System.out.println("Старый паспорт" + updatedPassport);
-
         passportValidator.validate(updatedPassport, bindingResult);
-
         if (bindingResult.hasErrors()) {
             Map<String, String> errors= new HashMap<>();
-
             bindingResult.getFieldErrors().forEach(err ->
                     errors.put(err.getField(), err.getDefaultMessage()));
-
             return ResponseEntity.badRequest().body(Map.of("errors", errors));
         }
 
@@ -111,24 +102,17 @@ public class UpdateController {
     @PostMapping("/api/user/update-address")
     @ResponseBody
     public ResponseEntity<?> updateAddress(@RequestBody @Validated Passport updatedPassport, BindingResult bindingResult) {
-        System.out.println("Новые данные паспотра" + updatedPassport);
-
         TokenUser tokenUser = (TokenUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         User currentUser = userService.findById(Integer.parseInt(tokenUser.getToken().subject()));
 
         Passport oldPassport = currentUser.getPassport();
 
-        System.out.println("Старый паспорт" + updatedPassport);
-
         addressValidator.validate(updatedPassport, bindingResult);
-
         if (bindingResult.hasErrors()) {
             Map<String, String> errors= new HashMap<>();
-
             bindingResult.getFieldErrors().forEach(err ->
                     errors.put(err.getField(), err.getDefaultMessage()));
-
             return ResponseEntity.badRequest().body(Map.of("errors", errors));
         }
 
@@ -137,6 +121,5 @@ public class UpdateController {
         return ResponseEntity.ok(updatedPassport);
 
     }
-
 
 }

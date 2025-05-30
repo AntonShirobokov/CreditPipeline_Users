@@ -11,19 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class CreditController {
 
-
     @GetMapping("/credit")
     public String credit() {
-
-        TokenUser tokenUser = (TokenUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-
-        System.out.println(tokenUser.getToken());
-
-
         return "credit";
     }
-
-
 
 }
