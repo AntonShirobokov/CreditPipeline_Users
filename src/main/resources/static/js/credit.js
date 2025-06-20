@@ -142,7 +142,14 @@ window.addEventListener('DOMContentLoaded', () => {
         })
         .catch(err => {
             document.getElementById('main-content').innerHTML = `
-                <p>Перед заполнением заявки на кредит необходимо <a href="/profile">заполнить данные профиля</a>.</p>
-            `;
+        <div style="font-size: 1.25rem; padding: 20px; text-align: center;">
+            <p style="margin: 0;">
+                Перед оформлением заявки, пожалуйста, 
+                <a href="/profile" style="text-decoration: none; color: #3366cc; font-weight: 600;">
+                    заполните данные профиля
+                </a>
+            </p>
+        </div>
+    `;
         });
 });

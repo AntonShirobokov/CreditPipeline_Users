@@ -22,6 +22,15 @@ public class Employee {
     @Column(name="c_username")
     private String username;
 
+    @Column(name="c_lastname")
+    private String lastName;
+
+    @Column(name="c_firstname")
+    private String firstName;
+
+    @Column(name="c_middlename")
+    private String middleName;
+
     @Column(name="c_password")
     private String password;
 
